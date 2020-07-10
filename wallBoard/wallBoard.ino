@@ -23,10 +23,13 @@ char msg[50];
 int value = 0;
  
 void setup() {
+  //lwvwl leds
     pinMode(LED1, OUTPUT);
     pinMode(LED2, OUTPUT);
     pinMode(LED3, OUTPUT);
     pinMode(LED4, OUTPUT);
+
+    //exercise leds
     pinMode(LED5, OUTPUT);
     pinMode(LED6, OUTPUT);
     pinMode(LED7, OUTPUT);
@@ -65,25 +68,31 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println(msg);
 
     //LEDs für die Levelanzeige
-    digitalWrite(LED1, LOW);
-    digitalWrite(LED2, LOW);
-    digitalWrite(LED3, LOW);
-    digitalWrite(LED4, LOW);
-
+    
+    resetAll();
+    if(strcmp(msg,"0")==0){
+      resetAll();
+      }
     if(strcmp(msg,"1")==0){
       digitalWrite(LED1, HIGH);
+      digitalWrite(LED2, LOW);
+    digitalWrite(LED3, LOW);
+    digitalWrite(LED4, LOW);
       randomExercise();
     }
     if(strcmp(msg,"2")==0){
       randomExercise();
       digitalWrite(LED1, HIGH);
       digitalWrite(LED2, HIGH);
+      digitalWrite(LED3, LOW);
+    digitalWrite(LED4, LOW);
     }
     if(strcmp(msg,"3")==0){
       randomExercise();
       digitalWrite(LED1, HIGH);
       digitalWrite(LED2, HIGH);
       digitalWrite(LED3, HIGH);
+      digitalWrite(LED4, LOW);
     }
     if(strcmp(msg,"4")==0){
       randomExercise();
@@ -94,12 +103,21 @@ void callback(char* topic, byte* payload, unsigned int length) {
     }
 }
 
-void randomExercise(){
-    digitalWrite(LED5, LOW);
+void resetAll(){
+  digitalWrite(LED1, LOW);
+    digitalWrite(LED2, LOW);
+    digitalWrite(LED3, LOW);
+    digitalWrite(LED4, LOW);
+  digitalWrite(LED5, LOW);
     digitalWrite(LED6, LOW);
     digitalWrite(LED7, LOW);
     digitalWrite(LED8, LOW);
     digitalWrite(LED9, LOW);
+  }
+
+
+void randomExercise(){
+    
     long ranNum = random(1, 5);
     switch(ranNum){
       case 1:

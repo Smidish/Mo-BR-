@@ -1,7 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
-//connection stuff TODO when home
 const char* SSID = "FRITZ!Box 6490 Cable";
 const char* PSK = "24770879063129528315";
 const char* MQTT_BROKER = "192.168.178.69";
@@ -16,6 +15,7 @@ int analogPin = 0;
 int val = 0;
 const char* sittingLevel;
 
+
 //Zeitmessung
 unsigned long CurrentTime;
 unsigned long ElapsedTime;
@@ -26,6 +26,7 @@ void setup(){
     setup_wifi();
     client.setServer(MQTT_BROKER, 1883);
     StartTime = millis();
+    pinMode(analogPin, INPUT);
 }
 
 void loop(){
@@ -55,16 +56,13 @@ void loop(){
       //60min
       else if(ElapsedTime<3600000){
         sittingLevel=4;
-      }
-      //90min
-      else if(ElapsedTime<5400000){
-        sittingLevel=5;
-      }    
-      else{
+      }  
+      
+   }
+   else{
         //actually I need to connect and read a message her from the MQTT fml
         sittingLevel = 0;
       }
-   }
    
    if(sittingLevel != 0&& val<1){
     resetPressure();
