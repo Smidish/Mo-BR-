@@ -11,9 +11,9 @@ char msg[50];
 int value = 0;
 
 //Drucksensor
-int analogPin = 0;
+const int FSR_PIN = A0;
 int val = 0;
-const char* sittingLevel;
+const char* sittingLevel = "0";
 
 
 //Zeitmessung
@@ -26,42 +26,43 @@ void setup(){
     setup_wifi();
     client.setServer(MQTT_BROKER, 1883);
     StartTime = millis();
-    pinMode(analogPin, INPUT);
+    pinMode(FSR_PIN, INPUT);
 }
 
 void loop(){
 
    //Drucksensor auslesen
-   val = analogRead(analogPin);
-   Serial.println(val);
-   
-   //Feststellen, wie lange Person sitzt / welches Pausenlevel erreicht ist
-   if(val>1){
-      CurrentTime = millis();
+   int val = analogRead(FSR_PIN);
+   //Serial.println(val);
+   CurrentTime = millis();
       ElapsedTime = CurrentTime - StartTime;
-
+   //Feststellen, wie lange Person sitzt / welches Pausenlevel erreicht ist
+   if(val>1000){
       
+      Serial.println("time: ");
+       Serial.println(ElapsedTime);
+
       //weniger als 20 Minuten (120000 milis)
-      if(ElapsedTime<1200000){
-        sittingLevel=1;
+      if(ElapsedTime>1200000){
+        sittingLevel="1";
       }
       //30min
-      else if(ElapsedTime<1800000){
-        sittingLevel=2;
+      else if(ElapsedTime>1800000){
+        sittingLevel="2";
       }
       //45min
-      else if(ElapsedTime<2700000){
-        sittingLevel=3;
+      else if(ElapsedTime>2700000){
+        sittingLevel="3";
       }
       //60min
-      else if(ElapsedTime<3600000){
-        sittingLevel=4;
+      else if(ElapsedTime>3600000){
+        sittingLevel="4";
       }  
       
    }
    else{
-        //actually I need to connect and read a message her from the MQTT fml
-        sittingLevel = 0;
+        //actually I should connect and read a message her from the MQTT fml
+        sittingLevel = "0";
       }
    
    if(sittingLevel != 0&& val<1){
@@ -77,9 +78,9 @@ void loop(){
     client.loop();
 
     //some logs to see if shit is working
-    snprintf (msg, 50, "Alive since %ld milliseconds", millis());
-    Serial.print("Publish message: ");
-    Serial.println(sittingLevel);
+    //snprintf (msg, 50, "Alive since %ld milliseconds", millis());
+    //Serial.print("Publish message: ");
+    //Serial.println(sittingLevel);
     
     //publish message on MQTT
     client.publish("/pc", sittingLevel);
@@ -100,30 +101,30 @@ void resetPressure(){
 
 void setup_wifi() {
     delay(10);
-    Serial.println();
-    Serial.print("Connecting to ");
-    Serial.println(SSID);
+    //Serial.println();
+    //Serial.print("Connecting to ");
+    //Serial.println(SSID);
  
     WiFi.begin(SSID, PSK);
  
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
-        Serial.print(".");
+        //Serial.print(".");
     }
  
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
+    //Serial.println("");
+    //Serial.println("WiFi connected");
+    //Serial.println("IP address: ");
+    //Serial.println(WiFi.localIP());
 }
  
 void reconnect() {
     while (!client.connected()) {
-        Serial.print("Reconnecting...");
+        //Serial.print("Reconnecting...");
         if (!client.connect("ESP8266Client")) {
-            Serial.print("failed, rc=");
-            Serial.print(client.state());
-            Serial.println(" retrying in 5 seconds");
+            //Serial.print("failed, rc=");
+            //Serial.print(client.state());
+           // Serial.println(" retrying in 5 seconds");
             delay(5000);
         }
     }
